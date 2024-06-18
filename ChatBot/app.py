@@ -26,7 +26,7 @@ def get_response(query: str, chat_history: List[AIMessage | HumanMessage]) -> st
     llm: ChatOpenAI = ChatOpenAI()
 
     chain = prompt | llm | StrOutputParser()
-    return chain.invoke({
+    return chain.stream({
         "query": query,
         "chat_history": chat_history
     })
@@ -57,7 +57,6 @@ if user_query is not None and user_query != "":
         st.markdown(user_query)
 
     with st.chat_message("AI"):
-        ai_response: str = get_response(user_query, st.session_state.chat_history)
-        st.markdown(ai_response)
+        ai_response: str = st.write_stream(get_response(user_query, st.session_state.chat_history))
 
     st.session_state.chat_history.append(AIMessage(ai_response))
